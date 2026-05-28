@@ -9,7 +9,8 @@
         "anthropic.claude-code",
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "bradlc.vscode-tailwindcss"
+        "bradlc.vscode-tailwindcss",
+        "MermaidChart.vscode-mermaid-chart"
       ],
       "settings": {
         "go.toolsManagement.checkForUpdates": "local",

@@ -19,7 +19,11 @@
       "Bash(bd context *)",
       "Bash(bd status *)",
       "Bash(bd config *)",
-      "Bash(bd dolt *)"
+      "Bash(bd dolt *)",
+      "Bash(bd ready *)",
+      "Bash(bd stats *)",
+      "Bash(bd memories *)",
+      "Bash(bd remember *)"
     ],
     "deny": [],
     "ask": []

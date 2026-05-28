@@ -35,7 +35,7 @@ Data structures and domain models:
 
 - **`git.go`**: Repository, Worktree, GitStatus models
 - **`claude.go`**: Claude AI session and message structures
-- **`gemini.go`**: Google Gemini integration models
+- **`gemini.go`**: Legacy Gemini transcript metadata models (not a roadmap provider target)
 - **`settings.go`**: Application configuration
 
 ### Services (`internal/services/`)

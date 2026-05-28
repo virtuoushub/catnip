@@ -163,7 +163,7 @@ Frontend behavior is validated with vitest (`pnpm test`) and colocated `*.test.t
 ## Out of Scope
 
 - Designing new features or behavior changes — this PRD documents the **current** product state only.
-- Multi-agent support beyond Claude Code (roadmap item "more AI coding agents"). Today the workspace lifecycle (checkpointing, titles, read-only mode) is gated to the `claude` agent; the Gemini integration only surfaces historical session summaries and does not spawn or manage a Gemini process. Treat first-class non-Claude agents as future work, not current behavior.
+- Multi-agent support beyond Claude Code (roadmap item "more AI coding agents"). Today the workspace lifecycle (checkpointing, titles, read-only mode) is gated to the `claude` agent. Pi is the intended next adapter target; Gemini/Google provider support is not planned for the near or medium term. Treat first-class non-Claude agents as future work, not current behavior.
 - Non-GitHub cloud environments ("other cloud native environment" roadmap item).
 - Billing, licensing, and account management for catnip.run.
 - Internal implementation details, file-by-file APIs, and code snippets (intentionally omitted so the PRD doesn't rot).

@@ -144,13 +144,13 @@ Rule: remote convenience layers route, wake, and observe. They do not own worksp
 
 ## Adapter priorities
 
-| Seam                            | Priority | Status          | Why                                                                                                                 |
-| ------------------------------- | -------: | --------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `AgentRunner`                   |        1 | Strong          | Claude and Gemini-like code paths already imply multiple agents. This directly de-risks Anthropic coupling.         |
-| `AgentMessage` / `AgentSession` |        1 | Strong          | Claude-shaped events and fields leak into UI consumers. Pair with `AgentRunner` to avoid double churn.              |
-| `GitHost`                       |        2 | Worth exploring | GitHub assumptions exist, but only one host is real today. Build seam with Forgejo/Codeberg adapter, not before.    |
-| `HostedBackend`                 |        3 | Worth exploring | Cloudflare/catnip.run affects convenience tier. Local core survives. Early cheap win: configurable mobile base URL. |
-| `IssueTracker`                  |        3 | Low-risk        | beads remains default; absurd can be explored as adapter.                                                           |
+| Seam                            | Priority | Status          | Why                                                                                                                                      |
+| ------------------------------- | -------: | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `AgentRunner`                   |        1 | Strong          | Claude plus the intended Pi adapter imply multiple agents. This directly de-risks Anthropic coupling without depending on Google/Gemini. |
+| `AgentMessage` / `AgentSession` |        1 | Strong          | Claude-shaped events and fields leak into UI consumers. Pair with `AgentRunner` to avoid double churn.                                   |
+| `GitHost`                       |        2 | Worth exploring | GitHub assumptions exist, but only one host is real today. Build seam with Forgejo/Codeberg adapter, not before.                         |
+| `HostedBackend`                 |        3 | Worth exploring | Cloudflare/catnip.run affects convenience tier. Local core survives. Early cheap win: configurable mobile base URL.                      |
+| `IssueTracker`                  |        3 | Low-risk        | beads remains default; absurd can be explored as adapter.                                                                                |
 
 ## Agent session contract
 

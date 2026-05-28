@@ -54,7 +54,7 @@
             </div>
 
             <p class="text-sm text-slate-500 mono">
-              container/internal/services/claude.go · claude_subprocess.go · claude_monitor.go · gemini.go · claude/parser/ · git/claude_detector.go · handlers/claude.go · models/claude.go
+              container/internal/services/claude.go · claude_subprocess.go · claude_monitor.go · pi adapter target · claude/parser/ · git/claude_detector.go · handlers/claude.go · models/claude.go
             </p>
 
             <!-- BEFORE / AFTER -->
@@ -71,7 +71,7 @@
                     <div class="border-2 border-slate-700 rounded p-1.5 text-xs text-center">monitor</div>
                   </div>
                   <div class="space-y-1.5">
-                    <div class="text-[10px] uppercase tracking-wider text-slate-500 text-center">GeminiService</div>
+                    <div class="text-[10px] uppercase tracking-wider text-slate-500 text-center">Pi adapter</div>
                     <div class="border-2 border-slate-400 border-dashed rounded p-1.5 text-xs text-center text-slate-500">subprocess'</div>
                     <div class="border-2 border-slate-400 border-dashed rounded p-1.5 text-xs text-center text-slate-500">parser'</div>
                     <div class="border-2 border-slate-400 border-dashed rounded p-1.5 text-xs text-center text-slate-500">detector'</div>
@@ -92,7 +92,7 @@
                   </div>
                   <div class="grid grid-cols-3 gap-2 pt-1">
                     <div class="border border-slate-400 rounded p-1 text-[11px] text-center">Claude</div>
-                    <div class="border border-slate-400 rounded p-1 text-[11px] text-center">Gemini</div>
+                    <div class="border border-slate-400 rounded p-1 text-[11px] text-center">Pi</div>
                     <div class="border border-dashed border-slate-300 rounded p-1 text-[11px] text-center text-slate-400">opencode…</div>
                   </div>
                 </div>
@@ -102,11 +102,11 @@
             <div class="grid sm:grid-cols-2 gap-4 text-sm">
               <div>
                 <p class="font-semibold text-slate-700">Problem</p>
-                <p class="text-slate-600">Claude and Gemini are parallel implementations with no shared interface — every new agent forks the whole stack.</p>
+                <p class="text-slate-600">Claude is currently coupled directly into the workspace lifecycle; adding Pi without a shared interface would fork the whole stack.</p>
               </div>
               <div>
                 <p class="font-semibold text-slate-700">Solution</p>
-                <p class="text-slate-600">One deep <span class="mono">AgentRunner</span> interface; <span class="mono">ClaudeService</span> and <span class="mono">GeminiService</span> become adapters behind it.</p>
+                <p class="text-slate-600">One deep <span class="mono">AgentRunner</span> interface; <span class="mono">ClaudeService</span> and a Pi adapter sit behind it. Gemini/Google is not a roadmap target.</p>
               </div>
             </div>
 
@@ -118,7 +118,7 @@
                 <li>Locality: agent quirks live in the adapter</li>
                 <li>New agent = one adapter, not a fork</li>
                 <li>Interface is the test surface (one fake)</li>
-                <li>FOSS targets: opencode, Aider, Continue</li>
+                <li>Strategic target: Pi, with other adapters only after the contract stabilizes</li>
               </ul>
             </div>
 
@@ -167,7 +167,7 @@ flowchart TD
 flowchart TD
   AM["AgentMessage (seam)"]:::deep
   CL["Claude shape"] -.implements.-> AM
-  GE["Gemini shape"] -.implements.-> AM
+  PI["Pi shape"] -.implements.-> AM
   AM --> A[TranscriptMessage]
   AM --> B[ToolCallRenderer]
   AM --> C["appStore agent:message"]
@@ -347,7 +347,7 @@ flowchart TD
       <section id="top-recommendation" class="rounded-xl deep text-white p-8 space-y-3">
         <p class="text-xs uppercase tracking-widest text-slate-400">Top recommendation</p>
         <h2 class="text-2xl font-serif font-semibold">Start with candidate 1 — the <span class="mono">AgentRunner</span> seam.</h2>
-        <p class="text-slate-300 max-w-3xl text-sm">It's the only candidate where the seam is already <em>real, not hypothetical</em>: <span class="mono">gemini.go</span> is a live second adapter sitting beside <span class="mono">ClaudeService</span> with nothing uniting them. It directly answers the stated #1 worry (Anthropic coupling), and it unblocks candidate 2 on the frontend. Highest leverage, lowest speculation. Candidate 3 waits for a real second git host; candidate 4 is optionality for the mobile tier, which the core product already lives without.</p>
+        <p class="text-slate-300 max-w-3xl text-sm">It's the candidate with the clearest strategic second adapter: Pi. The current Claude coupling should be extracted before Pi is added, so both agents share one workspace lifecycle instead of parallel stacks. Gemini/Google is explicitly not a roadmap target. This directly answers the stated #1 worry (Anthropic coupling), and it unblocks candidate 2 on the frontend. Highest leverage, lowest speculation. Candidate 3 waits for a real second git host; candidate 4 is optionality for the mobile tier, which the core product already lives without.</p>
         <a href="#candidates" class="inline-block text-sm text-emerald-300 hover:text-emerald-200 underline">↑ back to candidate 1</a>
       </section>
 

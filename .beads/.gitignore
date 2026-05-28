@@ -53,6 +53,10 @@ dolt-server.activity
 # Backup data (auto-exported JSONL, local-only)
 backup/
 
+# Dolt backup destination config + state (machine-specific paths, local-only)
+dolt-backup.json
+dolt-backup-state.json
+
 # Per-project environment file (Dolt connection config, GH#2520)
 .env
 

@@ -12,7 +12,14 @@
       "Bash(python3:*)",
       "WebFetch(domain:github.com)",
       "Bash(xargs ls:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(beads --help)",
+      "Bash(bd onboard *)",
+      "Bash(bd prime *)",
+      "Bash(bd context *)",
+      "Bash(bd status *)",
+      "Bash(bd config *)",
+      "Bash(bd dolt *)"
     ],
     "deny": [],
     "ask": []

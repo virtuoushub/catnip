@@ -23,7 +23,17 @@
       "Bash(bd ready *)",
       "Bash(bd stats *)",
       "Bash(bd memories *)",
-      "Bash(bd remember *)"
+      "Bash(bd remember *)",
+      "Bash(command -v dolt)",
+      "Bash(dolt version *)",
+      "Bash(bd --help)",
+      "Bash(bd backup *)",
+      "Bash(git pull *)",
+      "Bash(git push *)",
+      "Bash(git ls-remote *)",
+      "Bash(bd doctor *)",
+      "Bash(command -v zip)",
+      "Bash(git check-ignore *)"
     ],
     "deny": [],
     "ask": []

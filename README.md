@@ -206,3 +206,22 @@ This project is licensed under the Apache 2.0 - see the [LICENSE](LICENSE) file 
 </a>
 
 </div>
+
+```sh
+# Install beads CLI (system-wide - don't clone this repo into your project)
+curl -fsSL https://raw.githubusercontent.com/gastownhall/beads/main/scripts/install.sh | bash
+
+# Initialize in YOUR project
+cd your-project
+bd init
+
+# Optional: refresh or install richer instructions for your agent
+bd setup codex    # Codex CLI - installs skill, AGENTS.md guidance, and hooks
+bd setup claude   # Claude Code - installs hooks/settings
+bd setup factory  # Factory.ai Droid - creates/updates AGENTS.md
+```
+
+```
+shellcheck
+curl -fsSL https://raw.githubusercontent.com/gastownhall/beads/main/scripts/install.sh | bash
+```

@@ -38,7 +38,9 @@
       "Bash(bd create *)",
       "Bash(bd list *)",
       "Bash(bd dep *)",
-      "Bash(bd blocked *)"
+      "Bash(bd blocked *)",
+      "Bash(bd epic *)",
+      "Bash(bd update *)"
     ],
     "deny": [],
     "ask": []

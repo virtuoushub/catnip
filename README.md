@@ -221,7 +221,6 @@ bd setup claude   # Claude Code - installs hooks/settings
 bd setup factory  # Factory.ai Droid - creates/updates AGENTS.md
 ```
 
-```
-shellcheck
-curl -fsSL https://raw.githubusercontent.com/gastownhall/beads/main/scripts/install.sh | bash
+```sh
+claude --resume 8d2a5fb7-037c-455a-a394-5a1e246733c7
 ```

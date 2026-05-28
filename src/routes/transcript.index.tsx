@@ -17,7 +17,7 @@ interface Session {
   isActive: boolean;
   lastCost?: number;
   lastDuration?: number;
-  provider: "Claude" | "Gemini";
+  provider: "Claude";
 }
 
 function TranscriptIndex() {
@@ -140,8 +140,7 @@ function TranscriptIndex() {
         <div>
           <h1 className="text-3xl font-bold mb-2">Session Transcripts</h1>
           <p className="text-muted-foreground">
-            Browse and view detailed transcripts of Claude and Gemini coding
-            sessions
+            Browse and view detailed transcripts of Claude coding sessions
           </p>
         </div>
 

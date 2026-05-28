@@ -34,7 +34,11 @@
       "Bash(bd doctor *)",
       "Bash(command -v zip)",
       "Bash(git check-ignore *)",
-      "Bash(xdg-open \"/tmp/architecture-review-20260528-041723.html\")"
+      "Bash(xdg-open \"/tmp/architecture-review-20260528-041723.html\")",
+      "Bash(bd create *)",
+      "Bash(bd list *)",
+      "Bash(bd dep *)",
+      "Bash(bd blocked *)"
     ],
     "deny": [],
     "ask": []

@@ -42,5 +42,13 @@
       "debug": true,
       "dev": true
     }
+  },
+  "portsAttributes": {
+    "3000": {
+      "label": "beadsui"
+    },
+    "8000": {
+      "label": "http server"
+    }
   }
 }

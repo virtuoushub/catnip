@@ -30,5 +30,18 @@ if [ -d "/go/pkg/mod" ] && [ "$(stat -c '%U:%G' /go/pkg/mod 2>/dev/null)" != "$U
 fi
 sudo install -d -o "$USER" -g "$USER" "/home/vscode/.catnip/volume"
 
+# Install shellcheck if it is missing
+if ! command -v shellcheck >/dev/null 2>&1; then
+  echo "Installing shellcheck..."
+  sudo apt-get update
+  sudo apt-get install -y shellcheck
+fi
+
+# Install beads if it is missing
+if ! command -v beads >/dev/null 2>&1; then
+  echo "Installing beads..."
+  curl -fsSL https://raw.githubusercontent.com/gastownhall/beads/main/scripts/install.sh | bash
+fi
+
 # Run the main setup script (it will handle installing pnpm and just if needed)
 cd /workspaces/catnip && bash setup.sh

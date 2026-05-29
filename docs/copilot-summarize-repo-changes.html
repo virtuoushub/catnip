@@ -1,0 +1,912 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>copilot/summarize-repo — branch story</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #08111f;
+        --bg2: #0c172a;
+        --panel: rgba(15, 23, 42, 0.78);
+        --panel2: rgba(30, 41, 59, 0.72);
+        --text: #e5eefc;
+        --muted: #9fb0cb;
+        --line: rgba(148, 163, 184, 0.24);
+        --blue: #60a5fa;
+        --cyan: #22d3ee;
+        --green: #34d399;
+        --yellow: #fbbf24;
+        --pink: #f472b6;
+        --red: #fb7185;
+        --purple: #a78bfa;
+        --orange: #fb923c;
+        --shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at 8% 6%, rgba(96, 165, 250, 0.26), transparent 28rem),
+          radial-gradient(circle at 88% 10%, rgba(244, 114, 182, 0.22), transparent 30rem),
+          radial-gradient(circle at 52% 55%, rgba(52, 211, 153, 0.12), transparent 32rem),
+          linear-gradient(160deg, #050914, var(--bg) 45%, #101827);
+        color: var(--text);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .grain {
+        pointer-events: none;
+        position: fixed;
+        inset: 0;
+        opacity: 0.24;
+        mix-blend-mode: soft-light;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 260 260' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
+      }
+
+      header,
+      main {
+        width: min(1180px, calc(100vw - 32px));
+        margin: 0 auto;
+      }
+
+      header {
+        min-height: 94vh;
+        display: grid;
+        align-content: center;
+        gap: 24px;
+        padding: 64px 0 32px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        width: fit-content;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.68);
+        color: var(--muted);
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .pulse {
+        width: 9px;
+        height: 9px;
+        border-radius: 999px;
+        background: var(--green);
+        box-shadow: 0 0 0 6px rgba(52, 211, 153, 0.16);
+      }
+
+      h1 {
+        max-width: 1050px;
+        margin: 0;
+        font-size: clamp(42px, 8vw, 94px);
+        line-height: 0.94;
+        letter-spacing: -0.07em;
+      }
+
+      .gradient-text {
+        background: linear-gradient(100deg, #e0f2fe, #93c5fd 26%, #c084fc 58%, #f9a8d4);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .hero-copy {
+        max-width: 830px;
+        margin: 0;
+        color: var(--muted);
+        font-size: clamp(18px, 2.2vw, 24px);
+        line-height: 1.45;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+      }
+
+      .metric {
+        position: relative;
+        overflow: hidden;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.86), rgba(15, 23, 42, 0.42));
+        box-shadow: var(--shadow);
+      }
+
+      .metric::after {
+        content: "";
+        position: absolute;
+        right: -20px;
+        top: -30px;
+        width: 110px;
+        height: 110px;
+        border-radius: 999px;
+        background: var(--accent, var(--blue));
+        opacity: 0.16;
+        filter: blur(8px);
+      }
+
+      .metric strong {
+        display: block;
+        font-size: 32px;
+        letter-spacing: -0.04em;
+      }
+
+      .metric span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        margin: 0 calc(50% - 50vw);
+        border-block: 1px solid var(--line);
+        background: rgba(8, 17, 31, 0.72);
+        backdrop-filter: blur(18px);
+      }
+
+      nav .inner {
+        width: min(1180px, calc(100vw - 32px));
+        margin: 0 auto;
+        display: flex;
+        gap: 8px;
+        overflow: auto;
+        padding: 10px 0;
+      }
+
+      nav a,
+      button.chip {
+        flex: 0 0 auto;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 9px 13px;
+        background: rgba(15, 23, 42, 0.65);
+        color: var(--muted);
+        text-decoration: none;
+        font: inherit;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      nav a:hover,
+      button.chip:hover,
+      button.chip.active {
+        border-color: rgba(96, 165, 250, 0.65);
+        color: #dbeafe;
+        background: rgba(37, 99, 235, 0.2);
+      }
+
+      section {
+        padding: 70px 0;
+      }
+
+      .section-title {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 22px;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: clamp(30px, 4.4vw, 56px);
+        letter-spacing: -0.055em;
+      }
+
+      .section-title p,
+      .muted {
+        color: var(--muted);
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 32px;
+        background: var(--panel);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .panel.pad {
+        padding: 24px;
+      }
+
+      .storyline {
+        display: grid;
+        grid-template-columns: 1fr minmax(240px, 0.65fr);
+        min-height: 520px;
+      }
+
+      .stage {
+        position: relative;
+        padding: 28px;
+        overflow: hidden;
+      }
+
+      .stage svg {
+        width: 100%;
+        height: min(62vw, 520px);
+        min-height: 430px;
+      }
+
+      .phase-card {
+        border-left: 1px solid var(--line);
+        padding: 28px;
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.72), rgba(15, 23, 42, 0.32));
+      }
+
+      .phase-card h3 {
+        margin: 0 0 8px;
+        font-size: 28px;
+        letter-spacing: -0.035em;
+      }
+
+      .phase-card p {
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .phase-card ul {
+        padding-left: 20px;
+        color: #cbd5e1;
+        line-height: 1.7;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--cyan);
+      }
+
+      .range-labels {
+        display: flex;
+        justify-content: space-between;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .bar-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 18px;
+      }
+
+      .stack {
+        display: grid;
+        gap: 12px;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 180px 1fr 84px;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .bar {
+        height: 22px;
+        border-radius: 999px;
+        background: rgba(148, 163, 184, 0.16);
+        overflow: hidden;
+      }
+
+      .fill {
+        display: block;
+        height: 100%;
+        width: var(--w);
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--c), color-mix(in srgb, var(--c), white 32%));
+        box-shadow: 0 0 28px color-mix(in srgb, var(--c), transparent 55%);
+      }
+
+      .mini {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 18px;
+      }
+
+      .file-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+      }
+
+      .file-card {
+        position: relative;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 16px;
+        background: rgba(15, 23, 42, 0.58);
+        min-height: 168px;
+        transition: 180ms ease;
+      }
+
+      .file-card.hidden {
+        display: none;
+      }
+
+      .file-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(148, 163, 184, 0.55);
+      }
+
+      .tag {
+        display: inline-block;
+        border: 1px solid color-mix(in srgb, var(--tag), white 14%);
+        border-radius: 999px;
+        padding: 4px 8px;
+        background: color-mix(in srgb, var(--tag), transparent 82%);
+        color: color-mix(in srgb, var(--tag), white 42%);
+        font-size: 12px;
+      }
+
+      .file-card h3 {
+        margin: 16px 0 8px;
+        font-size: 18px;
+      }
+
+      .file-card p {
+        color: var(--muted);
+        line-height: 1.55;
+        margin: 0;
+      }
+
+      .toggle {
+        display: inline-grid;
+        grid-template-columns: 1fr 1fr;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        overflow: hidden;
+        background: rgba(15, 23, 42, 0.74);
+      }
+
+      .toggle button {
+        border: 0;
+        padding: 9px 14px;
+        background: transparent;
+        color: var(--muted);
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .toggle button.active {
+        background: rgba(96, 165, 250, 0.24);
+        color: #dbeafe;
+      }
+
+      .before-after {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+
+      .diagram-card {
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        padding: 20px;
+        background: rgba(15, 23, 42, 0.58);
+      }
+
+      .diagram-card svg {
+        width: 100%;
+        height: 330px;
+      }
+
+      .diagram-card.dim {
+        opacity: 0.34;
+        filter: grayscale(0.6);
+      }
+
+      .accordion {
+        display: grid;
+        gap: 12px;
+      }
+
+      details {
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: rgba(15, 23, 42, 0.58);
+        overflow: hidden;
+      }
+
+      summary {
+        cursor: pointer;
+        padding: 16px 18px;
+        font-weight: 700;
+      }
+
+      details div {
+        border-top: 1px solid var(--line);
+        padding: 0 18px 18px;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      code {
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        border-radius: 8px;
+        padding: 1px 6px;
+        background: rgba(15, 23, 42, 0.85);
+        color: #bfdbfe;
+      }
+
+      .footer-card {
+        display: grid;
+        grid-template-columns: 0.9fr 1.1fr;
+        gap: 22px;
+        align-items: center;
+      }
+
+      .callout {
+        border: 1px solid rgba(34, 211, 238, 0.36);
+        border-radius: 28px;
+        padding: 22px;
+        background: linear-gradient(135deg, rgba(8, 145, 178, 0.2), rgba(79, 70, 229, 0.12));
+      }
+
+      .commit-line {
+        display: grid;
+        grid-template-columns: 18px 1fr;
+        gap: 10px;
+        align-items: start;
+        margin: 10px 0;
+      }
+
+      .dot {
+        width: 11px;
+        height: 11px;
+        margin-top: 6px;
+        border-radius: 999px;
+        background: var(--dot, var(--blue));
+        box-shadow: 0 0 0 5px color-mix(in srgb, var(--dot, var(--blue)), transparent 82%);
+      }
+
+      @media (max-width: 900px) {
+        .hero-grid,
+        .file-grid,
+        .bar-grid,
+        .before-after,
+        .footer-card,
+        .storyline {
+          grid-template-columns: 1fr;
+        }
+
+        .phase-card {
+          border-left: 0;
+          border-top: 1px solid var(--line);
+        }
+
+        .row {
+          grid-template-columns: 1fr;
+          gap: 6px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grain"></div>
+    <header>
+      <div class="eyebrow"><span class="pulse"></span> branch report · copilot/summarize-repo</div>
+      <h1><span class="gradient-text">A branch that turns Catnip into a map of itself.</span></h1>
+      <p class="hero-copy">
+        The changes are mostly not feature UI. They are an operating manual, issue system, skill layer,
+        and vendor-neutral architecture laid over the repo — plus cleanup that narrows the active agent path
+        from “Claude + Gemini” to “Claude now, Pi next, adapters later.”
+      </p>
+      <div class="hero-grid">
+        <div class="metric" style="--accent: var(--blue)"><strong>90</strong><span>files changed</span></div>
+        <div class="metric" style="--accent: var(--green)"><strong>+4,659</strong><span>insertions</span></div>
+        <div class="metric" style="--accent: var(--red)"><strong>-39</strong><span>deletions</span></div>
+        <div class="metric" style="--accent: var(--purple)"><strong>26</strong><span>commits after main</span></div>
+      </div>
+      <nav aria-label="Document sections">
+        <div class="inner">
+          <a href="#story">Story</a>
+          <a href="#shape">Diff shape</a>
+          <a href="#files">File constellation</a>
+          <a href="#architecture">Architecture shift</a>
+          <a href="#details">Change notes</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section id="story">
+        <div class="section-title">
+          <div>
+            <h2>Four-act story</h2>
+            <p>Drag the slider: the branch evolves from a static summary into an agent-ready repo.</p>
+          </div>
+        </div>
+        <div class="panel storyline">
+          <div class="stage">
+            <svg viewBox="0 0 900 560" role="img" aria-label="Interactive story map">
+              <defs>
+                <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                <linearGradient id="route" x1="0" x2="1"><stop offset="0" stop-color="#60a5fa"/><stop offset=".5" stop-color="#22d3ee"/><stop offset="1" stop-color="#f472b6"/></linearGradient>
+              </defs>
+              <path d="M95 287 C 210 102, 323 112, 430 270 S 690 498, 804 258" fill="none" stroke="url(#route)" stroke-width="12" stroke-linecap="round" opacity=".28"/>
+              <path id="activePath" d="M95 287 C 210 102, 323 112, 430 270 S 690 498, 804 258" fill="none" stroke="url(#route)" stroke-width="5" stroke-linecap="round" stroke-dasharray="0 1200" filter="url(#glow)"/>
+
+              <g class="node" data-node="0" transform="translate(95 287)">
+                <circle r="54" fill="rgba(96,165,250,.16)" stroke="#60a5fa" stroke-width="2"/>
+                <text text-anchor="middle" y="-4" fill="#e0f2fe" font-size="18" font-weight="800">Read</text>
+                <text text-anchor="middle" y="18" fill="#9fb0cb" font-size="12">SUMMARY + PRD</text>
+              </g>
+              <g class="node" data-node="1" transform="translate(308 154)">
+                <circle r="54" fill="rgba(52,211,153,.16)" stroke="#34d399" stroke-width="2"/>
+                <text text-anchor="middle" y="-4" fill="#dcfce7" font-size="18" font-weight="800">Route</text>
+                <text text-anchor="middle" y="18" fill="#9fb0cb" font-size="12">skills + beads</text>
+              </g>
+              <g class="node" data-node="2" transform="translate(545 407)">
+                <circle r="54" fill="rgba(251,191,36,.16)" stroke="#fbbf24" stroke-width="2"/>
+                <text text-anchor="middle" y="-4" fill="#fef3c7" font-size="18" font-weight="800">Decouple</text>
+                <text text-anchor="middle" y="18" fill="#9fb0cb" font-size="12">Catnap docs</text>
+              </g>
+              <g class="node" data-node="3" transform="translate(804 258)">
+                <circle r="54" fill="rgba(244,114,182,.16)" stroke="#f472b6" stroke-width="2"/>
+                <text text-anchor="middle" y="-4" fill="#fce7f3" font-size="18" font-weight="800">Prepare</text>
+                <text text-anchor="middle" y="18" fill="#9fb0cb" font-size="12">Pi + cleanup</text>
+              </g>
+
+              <g opacity=".6">
+                <rect x="46" y="430" width="188" height="72" rx="18" fill="rgba(15,23,42,.72)" stroke="rgba(148,163,184,.22)"/>
+                <text x="66" y="460" fill="#e5eefc" font-size="14" font-weight="700">Current-state map</text>
+                <text x="66" y="482" fill="#9fb0cb" font-size="12">repo summary + EARS PRD</text>
+
+                <rect x="262" y="430" width="188" height="72" rx="18" fill="rgba(15,23,42,.72)" stroke="rgba(148,163,184,.22)"/>
+                <text x="282" y="460" fill="#e5eefc" font-size="14" font-weight="700">Agent OS</text>
+                <text x="282" y="482" fill="#9fb0cb" font-size="12">14 skills + bd issue DB</text>
+
+                <rect x="478" y="84" width="188" height="72" rx="18" fill="rgba(15,23,42,.72)" stroke="rgba(148,163,184,.22)"/>
+                <text x="498" y="114" fill="#e5eefc" font-size="14" font-weight="700">Vendor seams</text>
+                <text x="498" y="136" fill="#9fb0cb" font-size="12">AgentRunner / GitHost / Relay</text>
+
+                <rect x="682" y="430" width="188" height="72" rx="18" fill="rgba(15,23,42,.72)" stroke="rgba(148,163,184,.22)"/>
+                <text x="702" y="460" fill="#e5eefc" font-size="14" font-weight="700">Pi-ready workspace</text>
+                <text x="702" y="482" fill="#9fb0cb" font-size="12">VS Code extension + path</text>
+              </g>
+            </svg>
+          </div>
+          <aside class="phase-card">
+            <input id="phaseSlider" type="range" min="0" max="3" step="1" value="0" aria-label="Story phase" />
+            <div class="range-labels"><span>summary</span><span>workflow</span><span>architecture</span><span>runtime</span></div>
+            <h3 id="phaseTitle">1. Make the repo legible</h3>
+            <p id="phaseCopy">
+              The first commits add SUMMARY.md, CONTEXT.md, and a PRD that reverse-engineers Catnip in EARS form.
+              The branch starts by making the product understandable to humans and agents.
+            </p>
+            <ul id="phaseBullets">
+              <li>Repository overview: layers, workflows, key features.</li>
+              <li>Current-state PRD: 50+ normative requirements.</li>
+              <li>Shared domain vocabulary in CONTEXT.md.</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <section id="shape">
+        <div class="section-title">
+          <div>
+            <h2>Diff topography</h2>
+            <p>The size of the branch is overwhelmingly documentation and agent workflow scaffolding.</p>
+          </div>
+        </div>
+        <div class="panel pad bar-grid">
+          <div>
+            <div class="stack" aria-label="Insertion bars by category">
+              <div class="row"><span>Agent skills</span><div class="bar"><span class="fill" style="--w:100%;--c:var(--purple)"></span></div><span class="mini">50 files · +2,326</span></div>
+              <div class="row"><span>Architecture docs</span><div class="bar"><span class="fill" style="--w:54%;--c:var(--cyan)"></span></div><span class="mini">8 files · +1,254</span></div>
+              <div class="row"><span>Beads workflow</span><div class="bar"><span class="fill" style="--w:30%;--c:var(--green)"></span></div><span class="mini">17 files · +687</span></div>
+              <div class="row"><span>Dev/code cleanup</span><div class="bar"><span class="fill" style="--w:14%;--c:var(--orange)"></span></div><span class="mini">13 files · +336</span></div>
+              <div class="row"><span>Other config</span><div class="bar"><span class="fill" style="--w:2%;--c:var(--blue)"></span></div><span class="mini">2 files · +56</span></div>
+            </div>
+          </div>
+          <div class="callout">
+            <h3>What this shape says</h3>
+            <p class="muted">
+              This branch is less “new product feature” and more “repo cognition upgrade.” It adds a durable memory
+              of what Catnip is, how agents should work in it, and where the next provider seam should go.
+            </p>
+            <div class="commit-line" style="--dot:var(--blue)"><span class="dot"></span><span><strong>Discovery:</strong> SUMMARY.md, PRD.md, CONTEXT.md.</span></div>
+            <div class="commit-line" style="--dot:var(--green)"><span class="dot"></span><span><strong>Coordination:</strong> beads DB, hooks, AGENTS/CLAUDE rules.</span></div>
+            <div class="commit-line" style="--dot:var(--yellow)"><span class="dot"></span><span><strong>Direction:</strong> Catnap manifesto and vendor-neutral architecture.</span></div>
+            <div class="commit-line" style="--dot:var(--pink)"><span class="dot"></span><span><strong>Execution prep:</strong> Pi VS Code extension, devcontainer wiring, Gemini cleanup.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="files">
+        <div class="section-title">
+          <div>
+            <h2>File constellation</h2>
+            <p>Filter by theme to see how the work clusters.</p>
+          </div>
+        </div>
+        <div class="panel pad">
+          <div class="filters" id="filters">
+            <button class="chip active" data-filter="all">All</button>
+            <button class="chip" data-filter="map">Map the repo</button>
+            <button class="chip" data-filter="workflow">Agent workflow</button>
+            <button class="chip" data-filter="future">Vendor-neutral future</button>
+            <button class="chip" data-filter="cleanup">Runtime cleanup</button>
+          </div>
+          <div class="file-grid" id="fileGrid">
+            <article class="file-card" data-kind="map" style="--tag:var(--blue)"><span class="tag">map</span><h3>SUMMARY.md</h3><p>Compact explanation of Catnip’s purpose, layers, key features, and development workflow.</p></article>
+            <article class="file-card" data-kind="map" style="--tag:var(--blue)"><span class="tag">map</span><h3>PRD.md</h3><p>EARS-style requirements that turn current behavior into a product contract.</p></article>
+            <article class="file-card" data-kind="map" style="--tag:var(--blue)"><span class="tag">map</span><h3>CONTEXT.md</h3><p>Shared language: workspace refs, synced branches, agent sessions, and core boundaries.</p></article>
+
+            <article class="file-card" data-kind="workflow" style="--tag:var(--green)"><span class="tag">workflow</span><h3>.agents/skills/*</h3><p>Fourteen skills covering diagnosis, TDD, triage, prototyping, handoff, PRDs, issues, and architecture.</p></article>
+            <article class="file-card" data-kind="workflow" style="--tag:var(--green)"><span class="tag">workflow</span><h3>.beads/*</h3><p>Local Dolt-backed issue tracker, exported JSONL, hooks, metadata, and project config.</p></article>
+            <article class="file-card" data-kind="workflow" style="--tag:var(--green)"><span class="tag">workflow</span><h3>AGENTS.md / CLAUDE.md</h3><p>Canonical agent playbook plus Claude-specific routing to the shared skill and issue workflow.</p></article>
+
+            <article class="file-card" data-kind="future" style="--tag:var(--yellow)"><span class="tag">future</span><h3>docs/FORK_MANIFESTO.md</h3><p>States Catnap’s purpose: preserve Catnip’s local-first workspace idea without single-vendor identity.</p></article>
+            <article class="file-card" data-kind="future" style="--tag:var(--yellow)"><span class="tag">future</span><h3>docs/VENDOR_NEUTRAL_ARCHITECTURE.md</h3><p>Defines LocalCore and adapters: AgentRunner, GitHost, Relay, Runtime, HostedBackend, IssueTracker.</p></article>
+            <article class="file-card" data-kind="future" style="--tag:var(--yellow)"><span class="tag">future</span><h3>docs/oppo-vscode-pi-extension-research.md</h3><p>Competitive research for a minimal, terminal-first, privacy-preserving Pi VS Code extension.</p></article>
+
+            <article class="file-card" data-kind="cleanup" style="--tag:var(--pink)"><span class="tag">cleanup</span><h3>.devcontainer/devcontainer.json</h3><p>Adds <code>pi0.pi-vscode</code> and points VS Code at the workspace’s <code>pi</code> binary.</p></article>
+            <article class="file-card" data-kind="cleanup" style="--tag:var(--pink)"><span class="tag">cleanup</span><h3>container/Dockerfile</h3><p>Stops installing Gemini CLI; Claude remains the runtime-installed agent while adapter work is planned.</p></article>
+            <article class="file-card" data-kind="cleanup" style="--tag:var(--pink)"><span class="tag">cleanup</span><h3>container/internal/cmd/purr.go</h3><p>Treats expected PTY closure as normal, avoiding noisy errors when intercepted terminal sessions exit.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section id="architecture">
+        <div class="section-title">
+          <div>
+            <h2>Architecture shift</h2>
+            <p>Toggle the lens: the branch re-frames vendor integrations as replaceable adapters.</p>
+          </div>
+          <div class="toggle" role="group" aria-label="Architecture view toggle">
+            <button id="beforeBtn" class="active">before</button>
+            <button id="afterBtn">after</button>
+          </div>
+        </div>
+        <div class="before-after">
+          <div id="beforeCard" class="diagram-card">
+            <h3>Before: useful product, implicit defaults</h3>
+            <svg viewBox="0 0 520 340" role="img" aria-label="Before architecture diagram">
+              <defs><marker id="arrowA" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#94a3b8"/></marker></defs>
+              <circle cx="260" cy="170" r="62" fill="rgba(52,211,153,.18)" stroke="#34d399" stroke-width="2"/>
+              <text x="260" y="166" text-anchor="middle" fill="#e5eefc" font-size="18" font-weight="800">Catnip</text>
+              <text x="260" y="188" text-anchor="middle" fill="#9fb0cb" font-size="12">local Go core</text>
+              <g fill="rgba(244,114,182,.16)" stroke="#f472b6" stroke-width="1.5">
+                <rect x="34" y="42" width="132" height="52" rx="15"/><rect x="354" y="42" width="132" height="52" rx="15"/>
+                <rect x="34" y="246" width="132" height="52" rx="15"/><rect x="354" y="246" width="132" height="52" rx="15"/>
+              </g>
+              <g fill="#e5eefc" font-size="14" font-weight="700" text-anchor="middle">
+                <text x="100" y="73">Claude Code</text><text x="420" y="73">GitHub</text><text x="100" y="277">Cloudflare</text><text x="420" y="277">iOS app</text>
+              </g>
+              <g stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowA)" opacity=".75">
+                <path d="M166 76 C210 90 222 116 236 124"/><path d="M354 76 C310 90 298 116 284 124"/>
+                <path d="M166 264 C210 250 222 224 236 216"/><path d="M354 264 C310 250 298 224 284 216"/>
+              </g>
+            </svg>
+          </div>
+          <div id="afterCard" class="diagram-card dim">
+            <h3>After: local-first core + adapter seams</h3>
+            <svg viewBox="0 0 520 340" role="img" aria-label="After architecture diagram">
+              <defs><marker id="arrowB" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#67e8f9"/></marker></defs>
+              <rect x="168" y="102" width="184" height="132" rx="28" fill="rgba(52,211,153,.16)" stroke="#34d399" stroke-width="2"/>
+              <text x="260" y="154" text-anchor="middle" fill="#e5eefc" font-size="18" font-weight="800">LocalCore</text>
+              <text x="260" y="178" text-anchor="middle" fill="#9fb0cb" font-size="12">workspaces · git · PTY · ports</text>
+              <text x="260" y="200" text-anchor="middle" fill="#9fb0cb" font-size="12">state stays local</text>
+              <g fill="rgba(96,165,250,.16)" stroke="#60a5fa" stroke-width="1.5">
+                <rect x="24" y="30" width="132" height="46" rx="14"/><rect x="194" y="30" width="132" height="46" rx="14"/><rect x="364" y="30" width="132" height="46" rx="14"/>
+                <rect x="24" y="264" width="132" height="46" rx="14"/><rect x="194" y="264" width="132" height="46" rx="14"/><rect x="364" y="264" width="132" height="46" rx="14"/>
+              </g>
+              <g fill="#dbeafe" font-size="13" font-weight="800" text-anchor="middle">
+                <text x="90" y="58">AgentRunner</text><text x="260" y="58">GitHost</text><text x="430" y="58">Relay</text>
+                <text x="90" y="292">Runtime</text><text x="260" y="292">IssueTracker</text><text x="430" y="292">HostedBackend</text>
+              </g>
+              <g stroke="#67e8f9" stroke-width="2" marker-end="url(#arrowB)" opacity=".82">
+                <path d="M90 76 L180 120"/><path d="M260 76 L260 102"/><path d="M430 76 L340 120"/>
+                <path d="M90 264 L180 216"/><path d="M260 264 L260 234"/><path d="M430 264 L340 216"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section id="details">
+        <div class="section-title">
+          <div>
+            <h2>Change notes</h2>
+            <p>Expandable notes for the important practical changes.</p>
+          </div>
+        </div>
+        <div class="accordion">
+          <details open>
+            <summary>Agent workflow is now first-class</summary>
+            <div>
+              The branch adds a shared <code>AGENTS.md</code>, Claude-specific guidance, Claude skill symlinks,
+              and a full <code>.agents/skills</code> tree. Skills cover diagnosis, TDD, triage, PRD/issue creation,
+              prototyping, handoff, architecture review, and concise “caveman” mode.
+            </div>
+          </details>
+          <details>
+            <summary>Beads becomes the repo issue tracker</summary>
+            <div>
+              <code>bd init</code> adds <code>.beads</code> config, hooks, metadata, and exported issues. The repo now has
+              a local Dolt-backed issue workflow with 10 open issues at branch time and agent rules to use <code>bd</code>
+              rather than ad-hoc TODOs.
+            </div>
+          </details>
+          <details>
+            <summary>Catnap direction is documented, not implemented yet</summary>
+            <div>
+              The manifesto and vendor-neutral architecture propose a fork direction: keep Catnip’s local-first,
+              git-backed workspace core, but make Claude, GitHub, Cloudflare, Apple runtime, hosted relay, and issue
+              tracker integrations explicit adapters.
+            </div>
+          </details>
+          <details>
+            <summary>Pi becomes the next concrete adapter research path</summary>
+            <div>
+              The branch retargets near-term AgentRunner exploration to Pi, researches the VS Code extension landscape,
+              adds <code>pi0.pi-vscode</code> to the devcontainer, and configures <code>pi-vscode.path</code> for the installed Pi binary.
+            </div>
+          </details>
+          <details>
+            <summary>Runtime cleanup narrows the active agent surface</summary>
+            <div>
+              Gemini CLI is no longer installed in the container image, transcript UI now says Claude-only, and legacy
+              Gemini model docs are demoted. Separate fixes make <code>catnip purr</code> tolerate normal PTY closure and make
+              local binary installs atomic.
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section>
+        <div class="panel pad footer-card">
+          <div>
+            <h2>Net effect</h2>
+            <p class="muted">
+              <code>copilot/summarize-repo</code> turns an already-working agent workspace manager into a repo that explains
+              itself, tracks its own work, routes agents through named skills, and points toward a vendor-neutral Catnap core.
+            </p>
+          </div>
+          <div class="callout">
+            <strong>One-sentence read:</strong>
+            <p class="muted">
+              This is a documentation-and-operating-system branch: it teaches agents and maintainers what Catnip is,
+              how to coordinate work, and which seams to open before adding more agent providers.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const phases = [
+        {
+          title: "1. Make the repo legible",
+          copy:
+            "The first commits add SUMMARY.md, CONTEXT.md, and a PRD that reverse-engineers Catnip in EARS form. The branch starts by making the product understandable to humans and agents.",
+          bullets: [
+            "Repository overview: layers, workflows, key features.",
+            "Current-state PRD: 50+ normative requirements.",
+            "Shared domain vocabulary in CONTEXT.md.",
+          ],
+          dash: "250 1200",
+        },
+        {
+          title: "2. Add an agent operating system",
+          copy:
+            "The middle commits install the collaboration layer: skills, agent guidance, Claude settings, and beads issue tracking. The repo gains a workflow, not just documents.",
+          bullets: [
+            "14 shared skills under .agents/skills.",
+            "AGENTS.md becomes the canonical playbook.",
+            "beads hooks and bd prime wire issue context into sessions.",
+          ],
+          dash: "560 1200",
+        },
+        {
+          title: "3. Draw the vendor-neutral north star",
+          copy:
+            "The architecture docs name Catnap as a local-first, adapter-based successor direction. Claude, GitHub, Cloudflare, Apple, hosted backends, and issue trackers become replaceable seams.",
+          bullets: [
+            "Fork manifesto: preserve the workspace idea, not vendor assumptions.",
+            "Target architecture: LocalCore plus AgentRunner/GitHost/Relay/Runtime adapters.",
+            "Architecture review highlights blast radius and safe migration seams.",
+          ],
+          dash: "880 1200",
+        },
+        {
+          title: "4. Prepare the next adapter path",
+          copy:
+            "The final commits make the branch executable in this direction: Pi extension research and devcontainer wiring, Gemini cleanup, PTY closure handling, and atomic binary installs.",
+          bullets: [
+            "VS Code installs pi0.pi-vscode and points it at the Pi binary.",
+            "Gemini CLI/transcript copy is removed from the active path.",
+            "post-start rebuilds Catnip only when container sources changed.",
+          ],
+          dash: "1200 1200",
+        },
+      ];
+
+      const slider = document.querySelector("#phaseSlider");
+      const title = document.querySelector("#phaseTitle");
+      const copy = document.querySelector("#phaseCopy");
+      const bullets = document.querySelector("#phaseBullets");
+      const path = document.querySelector("#activePath");
+      const nodes = [...document.querySelectorAll(".node")];
+
+      function renderPhase(index) {
+        const phase = phases[index];
+        title.textContent = phase.title;
+        copy.textContent = phase.copy;
+        bullets.innerHTML = phase.bullets.map((item) => `<li>${item}</li>`).join("");
+        path.setAttribute("stroke-dasharray", phase.dash);
+        nodes.forEach((node, i) => {
+          node.style.opacity = i <= index ? "1" : ".35";
+          node.style.transformOrigin = "center";
+          node.style.transition = "180ms ease";
+          node.style.filter = i === index ? "drop-shadow(0 0 16px rgba(96,165,250,.6))" : "none";
+        });
+      }
+
+      slider.addEventListener("input", (event) => renderPhase(Number(event.target.value)));
+      renderPhase(0);
+
+      const filterButtons = [...document.querySelectorAll("[data-filter]")];
+      const cards = [...document.querySelectorAll(".file-card")];
+      filterButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const filter = button.dataset.filter;
+          filterButtons.forEach((b) => b.classList.toggle("active", b === button));
+          cards.forEach((card) => {
+            card.classList.toggle("hidden", filter !== "all" && card.dataset.kind !== filter);
+          });
+        });
+      });
+
+      const beforeBtn = document.querySelector("#beforeBtn");
+      const afterBtn = document.querySelector("#afterBtn");
+      const beforeCard = document.querySelector("#beforeCard");
+      const afterCard = document.querySelector("#afterCard");
+
+      function setView(view) {
+        const before = view === "before";
+        beforeBtn.classList.toggle("active", before);
+        afterBtn.classList.toggle("active", !before);
+        beforeCard.classList.toggle("dim", !before);
+        afterCard.classList.toggle("dim", before);
+      }
+
+      beforeBtn.addEventListener("click", () => setView("before"));
+      afterBtn.addEventListener("click", () => setView("after"));
+    </script>
+  </body>
+</html>

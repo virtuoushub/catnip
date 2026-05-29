@@ -10,13 +10,15 @@
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
         "bradlc.vscode-tailwindcss",
-        "MermaidChart.vscode-mermaid-chart"
+        "MermaidChart.vscode-mermaid-chart",
+        "pi0.pi-vscode"
       ],
       "settings": {
         "go.toolsManagement.checkForUpdates": "local",
         "go.useLanguageServer": true,
         "go.gopath": "/go",
-        "go.goroot": "/usr/local/go"
+        "go.goroot": "/usr/local/go",
+        "pi-vscode.path": "/home/vscode/.local/share/pnpm/bin/pi"
       }
     }
   },

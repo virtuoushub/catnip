@@ -261,7 +261,10 @@ install: build
 	mkdir -p "$INSTALL_DIR"
 	
 	if [[ "$(uname)" != "Darwin" ]]; then
-		cp bin/catnip "${INSTALL_DIR}/catnip"
+		TMP_BIN=$(mktemp "${INSTALL_DIR}/.catnip.tmp.XXXXXX")
+		cp bin/catnip "$TMP_BIN"
+		chmod 0755 "$TMP_BIN"
+		mv -f "$TMP_BIN" "${INSTALL_DIR}/catnip"
 		echo "✅ catnip installed to ${INSTALL_DIR}/catnip"
 		exit 0
 	fi

@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -135,7 +136,7 @@ func execWithTitleInterception(args []string, titleLogPath string) error {
 
 	// Wait for either goroutine to complete
 	err = <-done
-	if err != nil && err != io.EOF {
+	if err != nil && err != io.EOF && !isExpectedPTYClosureError(err) {
 		fmt.Fprintf(os.Stderr, "purr: I/O error: %v\n", err)
 	}
 
@@ -170,12 +171,37 @@ func scanAndPassthrough(reader io.Reader, writer io.Writer, titleLogPath string)
 		}
 
 		if err != nil {
-			if err == io.EOF {
+			if err == io.EOF || isExpectedPTYClosureError(err) {
 				return nil
 			}
 			return fmt.Errorf("failed to read PTY output: %w", err)
 		}
 	}
+}
+
+func isExpectedPTYClosureError(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	// Linux PTY masters often return EIO when the slave side exits.
+	var pathErr *os.PathError
+	if errors.As(err, &pathErr) {
+		if errno, ok := pathErr.Err.(syscall.Errno); ok && errno == syscall.EIO {
+			return true
+		}
+	}
+
+	// Keep conservative fallbacks for wrapped errors that don't expose errno cleanly.
+	errMsg := strings.ToLower(err.Error())
+	if strings.Contains(errMsg, "read /dev/ptmx: input/output error") {
+		return true
+	}
+	if strings.Contains(errMsg, "input/output error") && strings.Contains(errMsg, "pty") {
+		return true
+	}
+
+	return false
 }
 
 func logTitleChange(titleLogPath, title string) {

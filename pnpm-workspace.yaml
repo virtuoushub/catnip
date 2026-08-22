@@ -2,10 +2,10 @@ packages:
   - 'catnip-mobile'
 
 allowBuilds:
-  '@swc/core': false
-  esbuild: false
-  sharp: false
-  workerd: false
+  '@swc/core': true
+  esbuild: true
+  sharp: true
+  workerd: true
 
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'

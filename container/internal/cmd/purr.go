@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -170,7 +171,10 @@ func scanAndPassthrough(reader io.Reader, writer io.Writer, titleLogPath string)
 		}
 
 		if err != nil {
-			if err == io.EOF {
+			if err == io.EOF || errors.Is(err, syscall.EIO) {
+				// Linux PTY masters return EIO (not EOF) once the child
+				// exits and the slave side is closed; treat it as a
+				// normal end-of-stream rather than a real I/O failure.
 				return nil
 			}
 			return fmt.Errorf("failed to read PTY output: %w", err)

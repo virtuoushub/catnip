@@ -532,32 +532,32 @@ func TestExtractOAuthURL(t *testing.T) {
 	tests := []struct {
 		name                  string
 		output                string
-		shouldHaveRedirectUri bool
-		expectedRedirectUri   string
+		shouldHaveRedirectURI bool
+		expectedRedirectURI   string
 	}{
 		{
 			name:                  "URL without redirect_uri",
 			output:                "Visit: https://claude.ai/oauth/authorize?client_id=test123&state=abc456",
-			shouldHaveRedirectUri: true,
-			expectedRedirectUri:   "urn:ietf:wg:oauth:2.0:oob",
+			shouldHaveRedirectURI: true,
+			expectedRedirectURI:   "urn:ietf:wg:oauth:2.0:oob",
 		},
 		{
 			name:                  "URL with existing redirect_uri",
 			output:                "Visit: https://claude.ai/oauth/authorize?client_id=test123&redirect_uri=http://localhost:8080&state=abc456",
-			shouldHaveRedirectUri: true,
-			expectedRedirectUri:   "http://localhost:8080",
+			shouldHaveRedirectURI: true,
+			expectedRedirectURI:   "http://localhost:8080",
 		},
 		{
 			name:                  "URL with response_type and scope",
 			output:                "Visit: https://claude.ai/oauth/authorize?client_id=cli&response_type=code&scope=openid",
-			shouldHaveRedirectUri: true,
-			expectedRedirectUri:   "urn:ietf:wg:oauth:2.0:oob",
+			shouldHaveRedirectURI: true,
+			expectedRedirectURI:   "urn:ietf:wg:oauth:2.0:oob",
 		},
 		{
 			name:                  "no OAuth URL in output",
 			output:                "Some random text without OAuth URL",
-			shouldHaveRedirectUri: false,
-			expectedRedirectUri:   "",
+			shouldHaveRedirectURI: false,
+			expectedRedirectURI:   "",
 		},
 	}
 
@@ -566,7 +566,7 @@ func TestExtractOAuthURL(t *testing.T) {
 			service := NewClaudeOnboardingService(nil)
 			service.extractOAuthURL(tt.output)
 
-			if !tt.shouldHaveRedirectUri {
+			if !tt.shouldHaveRedirectURI {
 				if service.oauthURL != "" {
 					t.Errorf("Expected no OAuth URL, but got: %s", service.oauthURL)
 				}
@@ -581,14 +581,14 @@ func TestExtractOAuthURL(t *testing.T) {
 			}
 
 			// Check that redirect_uri parameter exists
-			redirectUri := parsedURL.Query().Get("redirect_uri")
-			if redirectUri == "" {
+			redirectURI := parsedURL.Query().Get("redirect_uri")
+			if redirectURI == "" {
 				t.Errorf("OAuth URL missing redirect_uri parameter: %s", service.oauthURL)
 			}
 
 			// Check that redirect_uri has the expected value
-			if redirectUri != tt.expectedRedirectUri {
-				t.Errorf("redirect_uri = %q, want %q", redirectUri, tt.expectedRedirectUri)
+			if redirectURI != tt.expectedRedirectURI {
+				t.Errorf("redirect_uri = %q, want %q", redirectURI, tt.expectedRedirectURI)
 			}
 
 			// Check that the URL starts with the correct base
